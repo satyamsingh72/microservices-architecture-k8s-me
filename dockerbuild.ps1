@@ -1,4 +1,4 @@
-$VERSION="v3"
+$VERSION="v5"
 
 cd auth-service
 docker build -t lsingodiya/auth-service:$VERSION .

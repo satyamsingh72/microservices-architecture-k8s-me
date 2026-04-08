@@ -51,5 +51,24 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Health Check API
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP', service: 'auth-service', timestamp: new Date() });
+});
+
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Auth Service running on port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`Auth Service running on port ${PORT}`));
+
+// Graceful Shutdown
+const shutdown = () => {
+  console.log('SIGTERM/SIGINT signal received: closing HTTP server');
+  server.close(async () => {
+    console.log('HTTP server closed');
+    await mongoose.connection.close();
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
