@@ -6,20 +6,26 @@ const CartDrawer = ({ isOpen, onClose, cart, onRemove, onCheckout, ordering }) =
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
+    <>
+      {/* Backdrop — separate AnimatePresence to avoid Fragment bug */}
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
+            key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[200]"
           />
-          
-          {/* Drawer */}
+        )}
+      </AnimatePresence>
+
+      {/* Drawer — separate AnimatePresence */}
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
+            key="drawer"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -100,10 +106,12 @@ const CartDrawer = ({ isOpen, onClose, cart, onRemove, onCheckout, ordering }) =
               </div>
             )}
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
 export default CartDrawer;
+
+

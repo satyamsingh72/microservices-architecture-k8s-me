@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ShoppingCart, Plus, Tag, Search, Filter, Gamepad2, Stars, Flame, Zap } from 'lucide-react';
+import { ShoppingCart, Plus, Tag, Search, Filter, Gamepad2, Stars, Flame, Zap, Ghost } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProductList = ({ onAddToCart }) => {
@@ -69,7 +69,7 @@ const ProductList = ({ onAddToCart }) => {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="sync">
           {filteredProducts.map((product, index) => (
             <motion.div 
               layout
