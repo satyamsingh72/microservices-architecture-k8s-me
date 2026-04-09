@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: lsingodiya/product-service:v10
+          image: lsingodiya/product-service:d484d4ccd9ad39271138c1c6fe5a123b70dbac32
           imagePullPolicy: Always
           ports:
             - containerPort: 5002
