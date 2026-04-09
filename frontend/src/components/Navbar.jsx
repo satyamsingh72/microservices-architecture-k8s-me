@@ -16,7 +16,7 @@ const Navbar = ({ currentUser, onLogout, setActiveTab, activeTab, cartCount, onO
         </div>
         <div className="flex flex-col">
           <span className="text-xl font-black text-white tracking-widest uppercase leading-none">Nexus</span>
-          <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.2em]">Gaming Hub</span>
+          <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.2em]">Gaming Hub 2.0</span>
         </div>
       </motion.div>
 
