@@ -33,14 +33,14 @@ metadata:
     type: local
     app: mongodb
 spec:
-  storageClassName: manual          # must match PVC storageClassName
+  storageClassName: manual # must match PVC storageClassName
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain   # data survives PVC deletion
+  persistentVolumeReclaimPolicy: Retain # data survives PVC deletion
   hostPath:
-    path: /data/mongodb             # path ON the EC2 node
+    path: /data/mongodb # path ON the EC2 node
     type: DirectoryOrCreate
   nodeAffinity:
     required:
@@ -49,4 +49,4 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - ip-172-31-31-31   # ← replace with: kubectl get nodes
+                - ip-172-31-31-31 # ← replace with: kubectl get nodes
