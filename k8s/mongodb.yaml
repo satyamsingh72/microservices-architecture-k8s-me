@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: mongo:8.3.0-rc5-windowsservercore-ltsc2025
+          image: mongo:8.3.0-rc5
           ports:
             - containerPort: 27017
           volumeMounts:
