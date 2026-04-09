@@ -54,6 +54,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ✅ FIX: pull BEFORE making changes
+      - name: Sync with remote
+        run: git pull --rebase
+
       - name: Install yq
         run: |
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
@@ -70,7 +74,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git pull --rebase
+
           git add k8s/
           git commit -m "Update images to ${IMAGE_TAG}" || echo "No changes to commit"
           git push
