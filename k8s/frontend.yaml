@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: lsingodiya/frontend:d484d4ccd9ad39271138c1c6fe5a123b70dbac32
+          image: lsingodiya/frontend:fcd766a5b86e40712f4a82e5a349dce17d9155cd
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -44,7 +44,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
-
 ---
 # Frontend Service
 # ClusterIP: Ingress controller routes external traffic here.
@@ -64,3 +63,7 @@ spec:
     - port: 80
       targetPort: 80
   type: ClusterIP
+  template:
+    spec:
+      containers:
+        - image: lsingodiya/frontend:fcd766a5b86e40712f4a82e5a349dce17d9155cd

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: lsingodiya/order-service:d484d4ccd9ad39271138c1c6fe5a123b70dbac32
+          image: lsingodiya/order-service:fcd766a5b86e40712f4a82e5a349dce17d9155cd
           imagePullPolicy: Always
           ports:
             - containerPort: 5003
@@ -54,7 +54,6 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
-
 ---
 # Order Service - ClusterIP Service
 apiVersion: v1
@@ -71,3 +70,7 @@ spec:
     - port: 5003
       targetPort: 5003
   type: ClusterIP
+  template:
+    spec:
+      containers:
+        - image: lsingodiya/order-service:fcd766a5b86e40712f4a82e5a349dce17d9155cd

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: lsingodiya/auth-service:d484d4ccd9ad39271138c1c6fe5a123b70dbac32
+          image: lsingodiya/auth-service:fcd766a5b86e40712f4a82e5a349dce17d9155cd
           imagePullPolicy: Always
           ports:
             - containerPort: 5001
@@ -60,7 +60,6 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
-
 ---
 # Auth Service - ClusterIP Service
 apiVersion: v1
@@ -77,3 +76,7 @@ spec:
     - port: 5001
       targetPort: 5001
   type: ClusterIP
+  template:
+    spec:
+      containers:
+        - image: lsingodiya/auth-service:fcd766a5b86e40712f4a82e5a349dce17d9155cd
