@@ -11,6 +11,7 @@ FROM node:18-alpine
 WORKDIR /app
 # Copy dependencies from build stage
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
+# Copy application source (excluding node_modules via .dockerignore)
 COPY --chown=node:node . .
 
 # Security: Run as non-root user

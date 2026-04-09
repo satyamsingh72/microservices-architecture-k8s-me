@@ -1,7 +1,10 @@
+---
+# Product Service Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: product-service
+  namespace: default
   labels:
     app: product-service
 spec:
@@ -14,66 +17,57 @@ spec:
       labels:
         app: product-service
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
       containers:
-      - name: product-service
-        image: lsingodiya/product-service:v3
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 5002
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "200m"
-            memory: "256Mi"
-        env:
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-config
-              key: PRODUCT_PORT
-        - name: MONGO_URI
-          value: "mongodb://$(MONGO_HOST):$(MONGO_PORT)/$(PRODUCT_DB)"
-        - name: MONGO_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-config
-              key: MONGO_HOST
-        - name: MONGO_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-config
-              key: MONGO_PORT
-        - name: PRODUCT_DB
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-config
-              key: PRODUCT_DB
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5002
-          initialDelaySeconds: 10
-          periodSeconds: 15
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5002
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        - name: product-service
+          image: lsingodiya/product-service:v10
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5002
+          env:
+            - name: PORT
+              value: "5002"
+            # MONGO_URI must be set explicitly so dotenv does NOT inject
+            # the localhost URI from the baked-in .env file.
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: microservice-config
+                  key: PRODUCT_MONGO_URI
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
 ---
+# Product Service - ClusterIP Service
 apiVersion: v1
 kind: Service
 metadata:
   name: product-service
+  namespace: default
+  labels:
+    app: product-service
 spec:
-  type: ClusterIP
-  ports:
-  - port: 5002
-    targetPort: 5002
   selector:
     app: product-service
+  ports:
+    - port: 5002
+      targetPort: 5002
+  type: ClusterIP

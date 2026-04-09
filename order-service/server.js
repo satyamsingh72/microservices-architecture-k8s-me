@@ -10,8 +10,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://mongodb:27017/microserviceOrders')
+// MongoDB Connection logic
+const mongoHost = process.env.MONGO_HOST || 'mongodb';
+const mongoPort = process.env.MONGO_PORT || '27017';
+const dbName = process.env.ORDER_DB || 'microserviceOrders';
+const mongoURI = process.env.MONGO_URI || `mongodb://${mongoHost}:${mongoPort}/${dbName}`;
+
+mongoose.connect(mongoURI)
 .then(() => console.log('Order Service: MongoDB Connected'))
 .catch(err => console.log('Order Service: MongoDB Connection Error', err));
 
