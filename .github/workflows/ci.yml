@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths-ignore:
       - "k8s/**"
+
 permissions:
   contents: write
 
@@ -21,20 +22,16 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: ./${{ matrix.service }}
           push: true
@@ -53,10 +50,8 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # ✅ FIX: pull BEFORE making changes
       - name: Sync with remote
         run: git pull --rebase
 
@@ -65,12 +60,16 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update Kubernetes manifests
+      # ✅ Correct: update ONLY Deployment docs inside multi-doc YAML
+      - name: Update Kubernetes manifests safely
         run: |
-          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/auth-service:" + strenv(IMAGE_TAG)' k8s/auth-service.yaml
-          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/product-service:" + strenv(IMAGE_TAG)' k8s/product-service.yaml
-          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/order-service:" + strenv(IMAGE_TAG)' k8s/order-service.yaml
-          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/frontend:" + strenv(IMAGE_TAG)' k8s/frontend.yaml
+          for file in k8s/*.yaml; do
+            yq -i '
+              select(.kind == "Deployment")
+              .spec.template.spec.containers[0].image =
+              strenv(DOCKERHUB_USERNAME) + "/" + .metadata.name + ":" + strenv(IMAGE_TAG)
+            ' "$file"
+          done
 
       - name: Commit & Push Changes
         run: |
