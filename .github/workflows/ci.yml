@@ -5,7 +5,6 @@ on:
     branches: ["main"]
     paths-ignore:
       - "k8s/**"
-
 permissions:
   contents: write
 
@@ -57,6 +56,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ✅ FIX: pull BEFORE making changes
       - name: Sync with remote
         run: git pull --rebase
 
@@ -65,18 +65,12 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update Kubernetes manifests (targeted + safe)
+      - name: Update Kubernetes manifests
         run: |
-          for file in k8s/*.yaml; do
-            yq -i '
-              select(
-                .kind == "Deployment" and
-                (.metadata.name | test("^(auth-service|product-service|order-service|frontend)$"))
-              )
-              .spec.template.spec.containers[].image =
-                strenv(DOCKERHUB_USERNAME) + "/" + .metadata.name + ":" + strenv(IMAGE_TAG)
-            ' "$file"
-          done
+          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/auth-service:" + strenv(IMAGE_TAG)' k8s/auth-service.yaml
+          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/product-service:" + strenv(IMAGE_TAG)' k8s/product-service.yaml
+          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/order-service:" + strenv(IMAGE_TAG)' k8s/order-service.yaml
+          yq -i '.spec.template.spec.containers[0].image = strenv(DOCKERHUB_USERNAME) + "/frontend:" + strenv(IMAGE_TAG)' k8s/frontend.yaml
 
       - name: Commit & Push Changes
         run: |
@@ -86,3 +80,10 @@ jobs:
           git add k8s/
           git commit -m "Update images to ${IMAGE_TAG}" || echo "No changes to commit"
           git push
+
+      # OPTIONAL: only if NOT using GitOps (ArgoCD/Flux)
+      # - name: Setup kubectl
+      #   uses: azure/setup-kubectl@v4
+      #
+      # - name: Deploy to Kubernetes
+      #   run: kubectl apply -f k8s/
