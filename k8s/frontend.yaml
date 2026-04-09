@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: lsingodiya/frontend:<tag>
+          image: lsingodiya/frontend:v11
           imagePullPolicy: Always
           ports:
             - containerPort: 80

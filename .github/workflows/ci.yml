@@ -15,25 +15,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKERHUB_USERNAME --password-stdin
 
+      # AUTH SERVICE
       - name: Build & Push Auth Service
         run: |
-          docker build -t $DOCKERHUB_USERNAME/auth-service:${{ github.sha }} ./auth-service
-          docker push $DOCKERHUB_USERNAME/auth-service:${{ github.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/auth-service:${{ github.sha }} \
+            ./auth-service \
+            --push
 
+      # PRODUCT SERVICE
       - name: Build & Push Product Service
         run: |
-          docker build -t $DOCKERHUB_USERNAME/product-service:${{ github.sha }} ./product-service
-          docker push $DOCKERHUB_USERNAME/product-service:${{ github.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/product-service:${{ github.sha }} \
+            ./product-service \
+            --push
 
+      # ORDER SERVICE
       - name: Build & Push Order Service
         run: |
-          docker build -t $DOCKERHUB_USERNAME/order-service:${{ github.sha }} ./order-service
-          docker push $DOCKERHUB_USERNAME/order-service:${{ github.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/order-service:${{ github.sha }} \
+            ./order-service \
+            --push
 
+      # FRONTEND
       - name: Build & Push Frontend
         run: |
-          docker build -t $DOCKERHUB_USERNAME/frontend:${{ github.sha }} ./frontend
-          docker push $DOCKERHUB_USERNAME/frontend:${{ github.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/frontend:${{ github.sha }} \
+            ./frontend \
+            --push
