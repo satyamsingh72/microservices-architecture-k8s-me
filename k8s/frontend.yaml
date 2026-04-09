@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: lsingodiya/frontend:7cb1b52e19f96e76e7c82fb6a6ca3f067364a508
+          image: lsingodiya/frontend:728952a5033b25d2a24f6d28511a3f1fb30dfbc4
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -66,4 +66,4 @@ spec:
   template:
     spec:
       containers:
-        - image: lsingodiya/frontend:fcd766a5b86e40712f4a82e5a349dce17d9155cd
+        - image: lsingodiya/frontend:728952a5033b25d2a24f6d28511a3f1fb30dfbc4
