@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: lsingodiya/order-service:fcd766a5b86e40712f4a82e5a349dce17d9155cd
+          image: lsingodiya/order-service:489ba7415cbd520611c79848e53cd29cd8a8b449
           imagePullPolicy: Always
           ports:
             - containerPort: 5003

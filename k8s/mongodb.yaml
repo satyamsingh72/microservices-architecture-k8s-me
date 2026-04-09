@@ -11,7 +11,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -34,14 +33,12 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: mongo:6.0
+          image: lsingodiya/mongodb:489ba7415cbd520611c79848e53cd29cd8a8b449
           ports:
             - containerPort: 27017
-
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
-
           resources:
             requests:
               cpu: "250m"
@@ -49,7 +46,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "1Gi"
-
           # ✅ FIXED: TCP probes (no mongosh overhead)
           livenessProbe:
             tcpSocket:
@@ -58,7 +54,6 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 6
-
           readinessProbe:
             tcpSocket:
               port: 27017
@@ -66,12 +61,10 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
-
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:
             claimName: mongodb-pvc
-
 ---
 apiVersion: v1
 kind: Service

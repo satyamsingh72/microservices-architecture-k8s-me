@@ -38,10 +38,10 @@ spec:
     - name: http
       port: 80
       targetPort: http
-      nodePort: 30080       # ← fixed HTTP port — open this in EC2 Security Group
+      nodePort: 30080 # ← fixed HTTP port — open this in EC2 Security Group
       protocol: TCP
     - name: https
       port: 443
       targetPort: https
-      nodePort: 30443       # ← fixed HTTPS port — open this in EC2 Security Group
+      nodePort: 30443 # ← fixed HTTPS port — open this in EC2 Security Group
       protocol: TCP

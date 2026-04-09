@@ -7,19 +7,16 @@ data:
   # MongoDB host (K8s internal DNS name of the mongodb Service)
   MONGO_HOST: "mongodb"
   MONGO_PORT: "27017"
-
   # Full connection URIs per service — these override the .env file values
   # because K8s env vars are set BEFORE dotenv runs, and dotenv never
   # overrides existing env vars.
   AUTH_MONGO_URI: "mongodb://mongodb:27017/microserviceAuth"
   PRODUCT_MONGO_URI: "mongodb://mongodb:27017/microserviceProducts"
   ORDER_MONGO_URI: "mongodb://mongodb:27017/microserviceOrders"
-
   # Individual DB names (kept for reference / future use)
   AUTH_DB: "microserviceAuth"
   PRODUCT_DB: "microserviceProducts"
   ORDER_DB: "microserviceOrders"
-
   # Service ports
   AUTH_PORT: "5001"
   PRODUCT_PORT: "5002"
