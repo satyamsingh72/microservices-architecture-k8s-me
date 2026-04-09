@@ -1,22 +1,11 @@
 ---
-##############################################################################
-# PersistentVolumeClaim for MongoDB data
-#
-# LOCAL CLUSTER (minikube/kind):
-#   → Uses storageClassName: manual to bind to the static PV in pv.yaml.
-#   → Apply pv.yaml BEFORE this file.
-#
-# CLOUD CLUSTER (EKS / GKE / AKS):
-#   → Remove or comment out the `storageClassName: manual` line below.
-#   → The cloud provider's default StorageClass will dynamically provision a PV.
-##############################################################################
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mongodb-pvc
   namespace: default
 spec:
-  storageClassName: manual        # remove this line on cloud clusters
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -24,7 +13,6 @@ spec:
       storage: 1Gi
 
 ---
-# MongoDB Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,11 +22,11 @@ metadata:
     app: mongodb
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mongodb
-  strategy:
-    type: Recreate    # Required: only one pod can write to RWO volume at a time
   template:
     metadata:
       labels:
@@ -49,41 +37,42 @@ spec:
           image: mongo:6.0
           ports:
             - containerPort: 27017
+
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
+
           resources:
             requests:
               cpu: "250m"
-              memory: "256Mi"
+              memory: "512Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "1Gi"
+
+          # ✅ FIXED: TCP probes (no mongosh overhead)
           livenessProbe:
-            exec:
-              command:
-                - mongosh
-                - --eval
-                - "db.adminCommand('ping')"
-            initialDelaySeconds: 30
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 60
             periodSeconds: 15
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 6
+
           readinessProbe:
-            exec:
-              command:
-                - mongosh
-                - --eval
-                - "db.adminCommand('ping')"
-            initialDelaySeconds: 15
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
             periodSeconds: 10
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 6
+
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:
             claimName: mongodb-pvc
 
 ---
-# MongoDB Service (ClusterIP — internal DNS only, never exposed externally)
 apiVersion: v1
 kind: Service
 metadata:
