@@ -1,8 +1,7 @@
 frontend:
-  image: satyam3singh/frontend:latest
+  image: satyam3singh/frontend:4d390b4b3be4515cae0f6679faffcb5587a9470c
   replicas: 2
   port: 80
-
   resources:
     requests:
       cpu: "50m"
@@ -10,12 +9,10 @@ frontend:
     limits:
       cpu: "200m"
       memory: "128Mi"
-
 auth:
-  image: satyam3singh/auth-service:latest
+  image: satyam3singh/auth-service:4d390b4b3be4515cae0f6679faffcb5587a9470c
   replicas: 2
   port: 5001
-
   resources:
     requests:
       cpu: "100m"
@@ -23,12 +20,10 @@ auth:
     limits:
       cpu: "250m"
       memory: "256Mi"
-
 product:
-  image: satyam3singh/product-service:latest
+  image: satyam3singh/product-service:4d390b4b3be4515cae0f6679faffcb5587a9470c
   replicas: 2
   port: 5002
-
   resources:
     requests:
       cpu: "100m"
@@ -36,12 +31,10 @@ product:
     limits:
       cpu: "250m"
       memory: "256Mi"
-
 order:
-  image: satyam3singh/order-service:latest
+  image: satyam3singh/order-service:4d390b4b3be4515cae0f6679faffcb5587a9470c
   replicas: 2
   port: 5003
-
   resources:
     requests:
       cpu: "100m"
@@ -49,14 +42,11 @@ order:
     limits:
       cpu: "250m"
       memory: "256Mi"
-
 mongodb:
   image: mongo:8.3.0-rc5
   port: 27017
-
   storage: 1Gi
   storageClass: manual
-
   resources:
     requests:
       cpu: "250m"
@@ -64,15 +54,12 @@ mongodb:
     limits:
       cpu: "500m"
       memory: "1Gi"
-
 ingress:
   enabled: true
   className: nginx
-
 config:
   authMongoUri: mongodb://mongodb:27017/authdb
   productMongoUri: mongodb://mongodb:27017/productdb
   orderMongoUri: mongodb://mongodb:27017/orderdb
-
 secret:
   jwtSecret: satyam123
