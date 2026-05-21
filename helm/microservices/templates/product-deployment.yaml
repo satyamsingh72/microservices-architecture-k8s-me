@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  labels:
+    app: product-service
+spec:
+  replicas: {{ .Values.product.replicas }}
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: {{ .Values.product.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.product.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.product.port }}"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: microservice-config
+                  key: PRODUCT_MONGO_URI
+          resources:
+            requests:
+              cpu: {{ .Values.product.resources.requests.cpu }}
+              memory: {{ .Values.product.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.product.resources.limits.cpu }}
+              memory: {{ .Values.product.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.product.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.product.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

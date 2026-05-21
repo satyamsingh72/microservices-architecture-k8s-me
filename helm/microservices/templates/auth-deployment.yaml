@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+spec:
+  replicas: {{ .Values.auth.replicas }}
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: {{ .Values.auth.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.auth.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.auth.port }}"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: microservice-config
+                  key: AUTH_MONGO_URI
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: microservice-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: {{ .Values.auth.resources.requests.cpu }}
+              memory: {{ .Values.auth.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.auth.resources.limits.cpu }}
+              memory: {{ .Values.auth.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.auth.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.auth.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

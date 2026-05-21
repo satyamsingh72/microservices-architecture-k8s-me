@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+spec:
+  replicas: {{ .Values.order.replicas }}
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: {{ .Values.order.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.order.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.order.port }}"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: microservice-config
+                  key: ORDER_MONGO_URI
+          resources:
+            requests:
+              cpu: {{ .Values.order.resources.requests.cpu }}
+              memory: {{ .Values.order.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.order.resources.limits.cpu }}
+              memory: {{ .Values.order.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.order.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.order.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

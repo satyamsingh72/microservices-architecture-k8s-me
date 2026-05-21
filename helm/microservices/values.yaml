@@ -1,0 +1,78 @@
+frontend:
+  image: satyam3singh/frontend:latest
+  replicas: 2
+  port: 80
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+auth:
+  image: satyam3singh/auth-service:latest
+  replicas: 2
+  port: 5001
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+product:
+  image: satyam3singh/product-service:latest
+  replicas: 2
+  port: 5002
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+order:
+  image: satyam3singh/order-service:latest
+  replicas: 2
+  port: 5003
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+mongodb:
+  image: mongo:8.3.0-rc5
+  port: 27017
+
+  storage: 1Gi
+  storageClass: manual
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
+ingress:
+  enabled: true
+  className: nginx
+
+config:
+  authMongoUri: mongodb://mongodb:27017/authdb
+  productMongoUri: mongodb://mongodb:27017/productdb
+  orderMongoUri: mongodb://mongodb:27017/orderdb
+
+secret:
+  jwtSecret: satyam123

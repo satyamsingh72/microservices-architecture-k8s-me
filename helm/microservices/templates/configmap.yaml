@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: microservice-config
+
+data:
+  AUTH_MONGO_URI: "{{ .Values.config.authMongoUri }}"
+  PRODUCT_MONGO_URI: "{{ .Values.config.productMongoUri }}"
+  ORDER_MONGO_URI: "{{ .Values.config.orderMongoUri }}"
